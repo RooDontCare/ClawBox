@@ -19,7 +19,9 @@ const GameConfig = {
 
   // Save settings
   autoSave: true,
-  autoSaveInterval: 60000 // ms (1 minute)
+  autoSaveInterval: 60000, // ms (1 minute)
+  // Game tick settings
+  tickInterval: 1000 // ms per tick (default 1 second)
 };
 
 function generatePlayerId() {

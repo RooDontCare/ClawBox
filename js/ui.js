@@ -210,7 +210,7 @@ const UI = {
   // Update status
   updateStatus() {
     this.elements.location.textContent = Game.state.location;
-    this.elements.gameTime.textContent = Game.state.gameTime;
+    this.elements.gameTime.textContent = Game.state.tick + " 秒";
   },
 
   // Update inventory

@@ -2,7 +2,7 @@ const Game = {
   state: {
     playerName: GameConfig.playerName,
     location: 'unknown',
-    gameTime: 'Day 1, Morning',
+    tick: 0, // Game tick (unsigned int, in seconds)
     inventory: [],
     gameState: {
       started: false,
@@ -10,6 +10,9 @@ const Game = {
     },
     llmHistory: []
   },
+
+  // Tick timer
+  tickTimer: null,
 
   // Initialize game
   async init() {
@@ -20,7 +23,7 @@ const Game = {
       LLM.history = this.state.llmHistory || [];
       console.log('Loaded save from:', loadResult.timestamp);
       UI.updateAll();
-      UI.showMessage('系统', `欢迎回来，${this.state.playerName}！游戏已加载。`);
+      UI.showMessage('系统', \`欢迎回来，\${this.state.playerName}！游戏已加载。\`);
     } else {
       console.log('No save found, starting new game');
     }
@@ -35,15 +38,37 @@ const Game = {
   async start() {
     this.state.gameState.started = true;
     this.state.location = 'unknown';
-    this.state.gameTime = 'Day 1, Morning';
+    this.state.tick = 0; // Initialize tick to 0
 
     // Reset LLM conversation
     LLM.reset();
+
+    // Start tick timer
+    this.startTickTimer();
 
     // Send initial prompt
     await this.processInput('开始游戏');
 
     UI.updateAll();
+  },
+
+  // Start tick timer
+  startTickTimer() {
+    if (this.tickTimer) {
+      clearInterval(this.tickTimer);
+    }
+    this.tickTimer = setInterval(() => {
+      this.state.tick++;
+      UI.updateStatus();
+    }, GameConfig.tickInterval);
+  },
+
+  // Stop tick timer
+  stopTickTimer() {
+    if (this.tickTimer) {
+      clearInterval(this.tickTimer);
+      this.tickTimer = null;
+    }
   },
 
   // Process player input
@@ -69,7 +94,7 @@ const Game = {
       // Save state
       this.state.llmHistory = LLM.getHistory();
     } else {
-      UI.addMessage('系统', `错误: ${result.error}`);
+      UI.addMessage('系统', \`错误: \${result.error}\`);
     }
   },
 
@@ -82,7 +107,7 @@ const Game = {
 
     // Location updates
     if (content.includes('位置：') || content.includes('当前位置：')) {
-      const match = content.match(/位置[：:]\s*(.+)/);
+      const match = content.match(/位置[：:]\\s*(.+)/);
       if (match) {
         this.state.location = match[1].trim();
       }
@@ -90,20 +115,15 @@ const Game = {
 
     // Inventory additions
     if (content.includes('获得') || content.includes('得到')) {
-      const match = content.match(/(?:获得|得到)\s*(.+?)(?:[，。、])/);
+      const match = content.match(/(?:获得|得到)\\s*(.+?)(?:[，。、])/);
       if (match) {
         const item = match[1].trim();
         this.addToInventory(item);
       }
     }
 
-    // Time updates
-    if (content.includes('时间：') || content.includes('现在是')) {
-      const match = content.match(/(?:时间|现在是)[：:]\s*(.+)/);
-      if (match) {
-        this.state.gameTime = match[1].trim();
-      }
-    }
+    // Note: Time updates are now handled automatically by tick timer
+    // No need to parse time from LLM response
   },
 
   // Add item to inventory
@@ -135,8 +155,13 @@ const Game = {
 
   // Set game state
   setState(newState) {
+    this.stopTickTimer(); // Stop existing timer
     this.state = { ...newState };
     LLM.history = this.state.llmHistory || [];
+    // Restart tick timer if game is started
+    if (this.state.gameState.started) {
+      this.startTickTimer();
+    }
     UI.updateAll();
   },
 
