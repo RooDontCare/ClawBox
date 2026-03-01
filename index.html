@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LLM Adventure Game</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+  <div class="game-container">
+    <!-- Header -->
+    <header class="game-header">
+      <h1 class="game-title">LLM Adventure</h1>
+      <div class="player-info">
+        <span id="playerName">未命名</span>
+        <button id="settingsBtn" class="icon-btn">⚙️</button>
+      </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="game-main">
+      <!-- Game screen -->
+      <div class="game-screen">
+        <!-- Dialog area -->
+        <div class="dialog-area" id="dialogArea">
+          <div class="dialog-placeholder">点击下方按钮开始游戏...</div>
+        </div>
+
+        <!-- Input area -->
+        <div class="input-area">
+          <input
+            type="text"
+            id="playerInput"
+            class="player-input"
+            placeholder="输入你的行动..."
+            autocomplete="off"
+          >
+          <button id="sendBtn" class="send-btn">发送</button>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="action-buttons" id="actionButtons">
+          <button class="action-btn" data-action="start">开始游戏</button>
+          <button class="action-btn" data-action="help">帮助</button>
+        </div>
+      </div>
+
+      <!-- Side panel -->
+      <aside class="side-panel">
+        <!-- Status -->
+        <div class="panel-section">
+          <h3 class="panel-title">状态</h3>
+          <div class="status-list">
+            <div class="status-item">
+              <span class="status-label">位置:</span>
+              <span class="status-value" id="location">-</span>
+            </div>
+            <div class="status-item">
+              <span class="status-label">时间:</span>
+              <span class="status-value" id="gameTime">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inventory -->
+        <div class="panel-section">
+          <h3 class="panel-title">背包</h3>
+          <div class="inventory-list" id="inventory">
+            <div class="empty-inventory">空</div>
+          </div>
+        </div>
+
+        <!-- Save controls -->
+        <div class="panel-section">
+          <h3 class="panel-title">存档</h3>
+          <div class="save-controls">
+            <button id="saveBtn" class="control-btn">💾 保存</button>
+            <button id="loadBtn" class="control-btn">📂 加载</button>
+          </div>
+          <div class="save-status" id="saveStatus"></div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Settings modal -->
+    <div class="modal" id="settingsModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>设置</h2>
+          <button class="close-btn" id="closeSettings">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="backendUrl">后端 API 地址:</label>
+            <input type="text" id="backendUrl" class="form-input" placeholder="http://localhost:3000">
+          </div>
+          <div class="form-group">
+            <label for="playerId">玩家 ID:</label>
+            <input type="text" id="playerId" class="form-input" placeholder="自动生成">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" id="saveSettings">保存</button>
+          <button class="btn btn-secondary" id="cancelSettings">取消</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="loading-spinner"></div>
+      <div class="loading-text" id="loadingText">加载中...</div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/save-manager.js"></script>
+  <script src="js/llm.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+</html>
